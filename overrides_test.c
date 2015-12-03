@@ -5,7 +5,7 @@ int main(int argc, char const *argv[])
 {
     char hello[] = "hello world";
     
-    FILE *fp = fopen("hello.txt", "w");
+    FILE *fp = fopen("Untitled-hello.txt", "w");
    
     if (fp) {
         fwrite(hello, 1, strlen(hello), fp);

@@ -2,7 +2,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <dlfcn.h>
-
+#include <math.h>
+#include <string.h>
 
 #define ARR_SIZE(arr) ( sizeof((arr)) / sizeof((arr[0])) )
 
@@ -21,17 +22,19 @@ FILE * fopen(const char * filename, const char * mode)
         original_fopen = dlsym(RTLD_NEXT, "fopen");
 
     // do our own processing; in this case just print the parameters
-    printf("== fopen: {%s,%s} ==\n", filename, mode);
-    
-    char buffer[40];
-    char* adj = adjs[rand() % ARR_SIZE(adjs)];
-    char* noun = nouns[rand() % ARR_SIZE(nouns)];
-    int num = rand() % 9999;
-    sprintf(buffer, "%s-%s-%d", adj, noun, num);
+    if ( strstr(filename, "Untitled") == filename ) {
 
-    // call the original fopen with the same arugments
-    FILE* f = original_fopen(buffer, mode);
-    
-    // return the result
+      char* adj = adjs[rand() % ARR_SIZE(adjs)];
+      char* noun = nouns[rand() % ARR_SIZE(nouns)];
+      int num = rand() % 9999;
+      char buffer[ARR_SIZE(adj)+1+ARR_SIZE(noun)+1+(int)floor(log10(num))+1];
+      sprintf(buffer, "%s-%s-%d", adj, noun, num);
+      printf("== we noticed an Untitled file, renaming to %s ==\n", buffer);
+
+      // call the original fopen with the same arugments
+      FILE* f = original_fopen(buffer, mode);
+      return f;
+    }
+    FILE* f = original_fopen(filename, mode);
     return f;
 }
